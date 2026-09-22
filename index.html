@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community-Based Disaster Risk Reduction Quiz</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        color: #1d1d1d;
+      }
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #ffffff;
+        padding: 30px 25px;
+        border-radius: 14px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 8px;
+        color: #123c69;
+      }
+      .subtitle {
+        text-align: center;
+        color: #4a5a6a;
+        margin-bottom: 25px;
+      }
+      .score-banner {
+        text-align: center;
+        margin: 18px 0 28px;
+        font-weight: bold;
+        color: #0d6efd;
+      }
+      .question {
+        border: 1px solid #dfe7f1;
+        border-radius: 10px;
+        padding: 18px 16px;
+        margin-bottom: 20px;
+        background: #fafcff;
+      }
+      .question h3 {
+        margin: 0 0 12px;
+        font-size: 1.05rem;
+      }
+      .options {
+        display: grid;
+        gap: 10px;
+      }
+      label {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #f3f6fb;
+        cursor: pointer;
+      }
+      input[type="radio"] {
+        margin-right: 10px;
+      }
+      .submit-btn {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #1b6dc1;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .submit-btn:hover { background: #1559a6; }
+      .result {
+        margin-top: 25px;
+        padding: 18px 20px;
+        border-radius: 10px;
+        display: none;
+        font-weight: bold;
+      }
+      .result.pass {
+        display: block;
+        background: #e7f9ee;
+        color: #1d6b43;
+        border: 1px solid #9ad4b0;
+      }
+      .result.fail {
+        display: block;
+        background: #fdecea;
+        color: #9b2c2c;
+        border: 1px solid #f09d9d;
+      }
+      @media (max-width: 600px) {
+        .container { margin: 15px; padding: 20px 15px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Community-Based Disaster Risk Reduction and Management Quiz</h1>
+      <div class="subtitle">No timer • 35 questions • Passing score: 33</div>
+      <div class="score-banner" id="scoreBanner">Score: 0 / 35</div>
+      <form id="quizForm">
+        <div id="quiz"></div>
+        <button class="submit-btn" type="submit">Submit Answers</button>
+      </form>
+      <div id="result" class="result"></div>
+      <div id="reviewBox" class="review-box" style="margin-top: 22px; display: none;"></div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          q: 'Sa konteksto ng Disaster Risk Reduction, alin ang pinakaakmang paliwanag sa ugnayan ng tao at kalikasan?',
+          options: ['Ang mga gawain ng tao ay may direktang epekto sa kalikasan at sa kalagayan ng kapaligiran.', 'Ang kalikasan ay ganap na nakapag-iisa sa pagprotekta sa tao.', 'Ang tao ay hindi naapektuhan ng anumang pagbabago sa kapaligiran.', 'Ang kalikasan ay may tungkuling palitan ang lahat ng gawaing pantao.'],
+          answer: 0,
+          explanation: 'Ang tao at kalikasan ay konektado; ang mga gawain ng tao ay nakaaapekto sa kapaligiran at sa kaligtasan sa hinaharap.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang nagpapakita ng pinakamabisang pagtukoy sa epekto ng human activity sa klima?',
+          options: ['Ang sobrang paggamit ng likas na yaman ay nakatutulong sa pagbabago ng klima.', 'Ang pagbabago ng klima ay bunga lamang ng pagbabago sa wika at kultura.', 'Ang klima ay nakadepende lamang sa bilang ng mga hayop sa kalupaan.', 'Ang tao ay walang kontribusyon sa global climate system.'],
+          answer: 0,
+          explanation: 'Ang labis na paggamit ng likas na yaman ay nakapagpapalala ng climate change at mga hazard.'
+        },
+        {
+          q: 'Kung ang isang lugar ay nakaranas ng malakas na pagyanig ngunit ang tindi ng paggalaw ng lupa ay iba-iba sa bawat bahagi, alin ang pinakaangkop na terminong ilalapat sa lakas ng pagyanig na naramdaman sa isang tiyak na lugar?',
+          options: ['Intensity', 'Magnitude', 'Epicenter', 'Tectonic belt'],
+          answer: 0,
+          explanation: 'Ang intensity ay tumutukoy sa lakas ng pagyanig na nararamdaman sa isang partikular na lugar.'
+        },
+        {
+          q: 'Alin ang pinakamahusay na pagkakaiba ng magnitude at intensity ng lindol?',
+          options: ['Ang magnitude ay sukat ng seismic energy sa pinagmulan, habang ang intensity ay lakas ng pagyanig na naramdaman sa isang lokasyon.', 'Ang magnitude ay ang tao ang nakararanas ng lindol, samantalang ang intensity ay ang sentro ng lindol.', 'Ang magnitude ay nakabatay sa panahon, habang ang intensity ay nakabatay sa klima.', 'Ang magnitude ay tumutukoy sa bilang ng mga nasirang bahay, samantalang ang intensity ay ang lakas ng bagyo.'],
+          answer: 0,
+          explanation: 'Ang magnitude ay dami ng enerhiyang inilabas ng lindol, habang ang intensity ay ang epekto at lakas na naramdaman sa isang lugar.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang pangunahing dahilan kung bakit ang Pilipinas ay madalas na nakararanas ng lindol at pagsabog ng bulkan?',
+          options: ['Ito ay matatagpuan sa Pacific Ring of Fire.', 'Ito ay nasa gitna ng mga karagatan.', 'Ito ay walang mga fault line.', 'Ito ay napapaligiran ng yelo at glacier.'],
+          answer: 0,
+          explanation: 'Ang Pilipinas ay nasa Pacific Ring of Fire, kung saan madalas ang tectonic activity.'
+        },
+        {
+          q: 'Alin ang pinakaangkop na paglalarawan sa PHIVOLCS?',
+          options: ['Ahensiya na nagmamasid at nagsusuri ng bulkan at lindol sa Pilipinas.', 'Ahensiya na nagtataguyod ng mga programang pang-edukasyon sa buong bansa.', 'Ahensiya na responsable sa pagbibigay ng mga permit sa construction.', 'Ahensiya na namamahala sa transportasyon at kalsada.'],
+          answer: 0,
+          explanation: 'Ang PHIVOLCS ang ahensiya na nagmamonitor at nagsusuri ng mga aktibidad ng bulkan at lindol.'
+        },
+        {
+          q: 'Sa konteksto ng “The Big One,” alin ang pinakatumpak na pahayag?',
+          options: ['Ito ay isang posibleng malakihang lindol na maaaring magmula sa West Valley Fault.', 'Ito ay tumutukoy sa anumang malakas na bagyo na dadaan sa Metro Manila.', 'Ito ay ang pinakamatinding pagbaha na naranasan sa Pilipinas.', 'Ito ay isang uri ng tsunami na sanhi ng pagtaas ng tubig-dagat.'],
+          answer: 0,
+          explanation: 'Ang “The Big One” ay ang posibleng malaking lindol na maaaring magmula sa West Valley Fault.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang tamang pagkakasunod-sunod ng mga lugar na tinatahak ng West Valley Fault?',
+          options: ['Bulacan → Rizal → Metro Manila → Cavite → Laguna', 'Cavite → Laguna → Davao → Zamboanga → Luzon', 'Baguio → Pangasinan → Cagayan → Ilocos Norte', 'Rizal → Leyte → Samar → Cebu → Davao'],
+          answer: 0,
+          explanation: 'Ang West Valley Fault ay tumatahak sa Bulacan, Rizal, Metro Manila, Cavite, at Laguna.'
+        },
+        {
+          q: 'Bakit mahalaga ang pag-alam sa inaasahang interval ng paggalaw ng West Valley Fault?',
+          options: ['Dahil ito ay nakatutulong sa pagpaplano at paghahanda ng mga komunidad sa paligid nito.', 'Dahil ito ay nagpapalawak ng dam sa Metro Manila.', 'Dahil ito ay nagsisiguro ng pagkakaroon ng mga tsunami.', 'Dahil ito ay nagpapababa ng lebel ng tubig sa ilog.'],
+          answer: 0,
+          explanation: 'Ang kaalaman sa interval ay mahalaga sa paghahanda at pag-iwas sa malubhang epekto ng lindol.'
+        },
+        {
+          q: 'Alin ang pinakatumpak na kahulugan ng pagbaha sa isang hydrologic context?',
+          options: ['Ito ang kondisyon kung saan ang tubig ay lumampas sa kapasidad ng lupa na sumipsip at makaapaw sa ibabaw.', 'Ito ay ang proseso ng pagsasagawa ng irrigation sa bukid.', 'Ito ay ang pag-alis ng mga sediment sa ilog.', 'Ito ay ang pagtaas ng temperatura ng dagat na walang tubig sa lupa.'],
+          answer: 0,
+          explanation: 'Kapag ang tubig ay lumampas sa kapasidad ng lupa na sumipsip, nagiging sanhi ito ng pagbaha.'
+        },
+        {
+          q: 'Anong kombinasyon ang nagpapakita ng tamang sanhi at aggravating factor ng pagbaha?',
+          options: ['Malakas na ulan at urbanisasyon', 'Mabagal na pag-ulan at pagbaba ng tubig-dagat', 'Kawalan ng ilog at pagdami ng mga puno', 'Pagtaas ng temperatura at pagkawala ng klima'],
+          answer: 0,
+          explanation: 'Ang malakas na ulan at urbanisasyon ay parehong nakapagpapalala ng pagbaha.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang wastong pag-uuri ng baha ayon sa lokasyon?',
+          options: ['Baha sa ilog, baha sa dalampasigan, at baha sa mataong lugar', 'Baha sa araw, baha sa buwan, at baha sa kagubatan', 'Baha sa kalsada, baha sa liwanag, at baha sa bahay', 'Baha sa bukid, baha sa sikat, at baha sa lupa'],
+          answer: 0,
+          explanation: 'Ayon sa lokasyon, may mga baha sa ilog, dalampasigan, at mataong lugar.'
+        },
+        {
+          q: 'Sa pagtukoy sa tagal ng baha, ang flash flood ay maaaring mailarawan bilang:',
+          options: ['Mabilis at biglaang pagbaha na may maikling tagal.', 'Baha na tumatagal ng buwan-buwan.', 'Baha na dulot lamang ng pag-on ng dam.', 'Baha na nangyayari lamang sa taglamig.'],
+          answer: 0,
+          explanation: 'Ang flash flood ay mabilis at biglaang, kaya maikli lang ang tagal nito.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang hindi kabilang sa mga salik na nagpapalala ng pagbaha?',
+          options: ['Pagkakaroon ng malilit na reservoir na nagsisilbing flood control', 'Urbanisasyon', 'Pagkalbo ng kagubatan', 'Pagdami ng informal settlers sa daanan ng tubig'],
+          answer: 0,
+          explanation: 'Ang maliliit na reservoir na nagsisilbing flood control ay nakatutulong sa pagliit ng baha, hindi nagpapalala nito.'
+        },
+        {
+          q: 'Kung ang isang komunidad ay nakalatag sa low-lying area at may kaunting watershed cover, alin ang pinaka-maaaring maging resulta?',
+          options: ['Mas mataas na pagkakataong magdulot ng matinding baha.', 'Mas kaunting tubig ang maaagaw ng lupa.', 'Mas kaunting pag-ulan ang tataas sa ibabaw.', 'Mas magiging maingat ang mga ilog sa dam release.'],
+          answer: 0,
+          explanation: 'Ang low-lying area at mahinang watershed cover ay nagpapataas ng panganib sa baha.'
+        },
+        {
+          q: 'Alin ang pinakamapapatunayan at pinakatumpak na depinisyon ng tsunami?',
+          options: ['Isang mataas na daluyong na karaniwang bunga ng paggalaw ng lupa sa ilalim ng dagat.', 'Isang uri ng bagyo na nabubuo sa tropikal na karagatan.', 'Isang maikling pagyanig na nararamdaman lamang sa lupa.', 'Isang pagtaas ng tubig sa ilog matapos ng bagyo.'],
+          answer: 0,
+          explanation: 'Ang tsunami ay isang mataas na daluyong dulot ng paggalaw ng lupa sa ilalim ng dagat.'
+        },
+        {
+          q: 'Bakit mahalaga ang pangyayaring Moro Gulf Tsunami sa kasaysayan ng disaster management sa Pilipinas?',
+          options: ['Dahil ito ang nagtulak sa pagbuo ng NDCC na kalaunan ay naging NDRRMC.', 'Dahil ito ang nagsilbing batayan ng pagbuo ng PHIVOLCS.', 'Dahil ito ang unang tsunami na naitala sa Pilipinas.', 'Dahil ito ay tumutukoy sa kaganapan ng anim na aktibong bulkan.'],
+          answer: 0,
+          explanation: 'Ang Moro Gulf Tsunami ang naging dahilan ng pagbuo ng NDCC, na kalaunan ay naging NDRRMC.'
+        },
+        {
+          q: 'Alin ang tamang pagtataya ng petsa at oras ng Moro Gulf Tsunami ayon sa aralin?',
+          options: ['Agosto 17, 1976, hatinggabi', 'Disyembre 25, 1976, tanghali', 'Agosto 17, 1986, madaling araw', 'Mayo 15, 1976, hapon'],
+          answer: 0,
+          explanation: 'Nangyari ang Moro Gulf Tsunami noong Agosto 17, 1976 sa hatinggabi, kaya maraming tao ang hindi handa.'
+        },
+        {
+          q: 'Ano ang pinakamainam na interpretasyon ng “bagyo ay isang umiikot na sistema ng panahon” sa layuning scientific?',
+          options: ['May mababang presyon sa sentro at umiihip na malalakas na hangin sa paligid.', 'May mataas na presyon sa gitna at tigil na pag-ulan sa labas.', 'Isang linear na paggalaw ng hangin na walang malaking presyon.', 'Isang uri ng tsunami na nagmumula sa karagatan.'],
+          answer: 0,
+          explanation: 'Ang bagyo ay may mababang presyon sa gitna at umiikot na malalakas na hangin sa paligid.'
+        },
+        {
+          q: 'Sa ilalim ng mga kondisyon sa karagatan, alin ang pinakaangkop na pahayag tungkol sa pagbuo ng bagyong tropikal?',
+          options: ['Nabubuo ito sa tropikal o subtropikal na karagatan kung ang tubig ay hindi bababa sa 26°C.', 'Nabubuo ito lamang sa mga continental shelf na may yelo.', 'Nabubuo ito sa tuyo at mababang presyon ng lupa.', 'Nabubuo ito sa mga lugar na walang hangin at malamig na tubig.'],
+          answer: 0,
+          explanation: 'Ang bagyo ay nabubuo sa mainit na tubig ng karagatan na hindi bababa sa 26°C.'
+        },
+        {
+          q: 'Alin ang pinakatumpak na pagkakaiba ng cyclone, hurricane, at typhoon?',
+          options: ['Lahat ay uri ng bagyo, ngunit ang pangalan ay nakadepende sa lokasyon at rehiyon.', 'Lahat ay uri ng lindol, ngunit iba ang intensity.', 'Hurricane lamang ang tawag sa mga bagyo sa Pilipinas.', 'Typhoon ay uri ng tsunami sa karagatan.'],
+          answer: 0,
+          explanation: 'Ang pangalan ay depende sa rehiyon: hurricane sa Atlantic, typhoon sa Pacific, at cyclone sa Indian Ocean.'
+        },
+        {
+          q: 'Kung ang bilis ng hangin ay 74 kph, alin ang tamang klasipikasyon ng bagyo?',
+          options: ['Tropical Storm', 'Severe Tropical Storm', 'Typhoon', 'Super Typhoon'],
+          answer: 0,
+          explanation: 'Ang Tropical Storm ang may hangin na 62–88 kph, kaya 74 kph ay nasa kategoriya nito.'
+        },
+        {
+          q: 'Alin ang tamang pagkakasunod-sunod ng klasipikasyon batay sa bilis ng hangin, simula sa pinakamababa?',
+          options: ['Tropical Depression → Tropical Storm → Severe Tropical Storm → Typhoon → Super Typhoon', 'Tropical Storm → Tropical Depression → Typhoon → Severe Tropical Storm → Super Typhoon', 'Typhoon → Tropical Storm → Tropical Depression → Severe Tropical Storm → Super Typhoon', 'Super Typhoon → Typhoon → Tropical Storm → Tropical Depression → Severe Tropical Storm'],
+          answer: 0,
+          explanation: 'Ang pagkakasunod-sunod ay mula sa pinakamababa hanggang sa pinakamalakas: Tropical Depression, Tropical Storm, Severe Tropical Storm, Typhoon, Super Typhoon.'
+        },
+        {
+          q: 'Sa pag-uuri ng bulkan, alin ang pinakaangkop na pahayag tungkol sa potentially active volcano?',
+          options: ['Wala pang tala ng pagsabog ngunit maaaring maging aktibo dahil sa geologic history at anyo ng bundok.', 'Ito ay isang bulkan na hindi kailanman sumabog at nalagyan na ng mga proseso ng eolyan at hydrolic erosion.', 'Ito ay bulkan na kasalukuyang sumasabog at may Alert Level 5.', 'Ito ay bulkan na hindi na natural at binuo ng tao.'],
+          answer: 0,
+          explanation: 'Ang potentially active volcano ay walang tala ng pagsabog ngunit may posibilidad pa ring maging aktibo.'
+        },
+        {
+          q: 'Alin ang pinakatumpak na interpretasyon ng Alert Level 3 sa aktibong bulkan?',
+          options: ['May bahagyang pagbabago at may presensiya ng magma na maaaring humantong sa pagsabog.', 'Walang makikitang pagbabago at mababa ang panganib.', 'Kasalukuyang sumasabog at may nakikitang lava flow.', 'Walang katibayan ng magma ngunit may aktibong lindol.'],
+          answer: 0,
+          explanation: 'Sa Alert Level 3, may bahagyang pagbabago at maaaring may magma na magdudulot ng pagsabog.'
+        },
+        {
+          q: 'Paano nakakaapekto ang geologic na edad ng isang bulkan sa pagtukoy ng estado nito?',
+          options: ['Ang geologically young na bulkan ay may mas mataas na posibilidad na maging potentially active.', 'Ang mas matandang bulkan ay palaging aktibo.', 'Ang lahat ng magnanakaw na bulkan ay inactive.', 'Ang geologic age ay hindi nakaaapekto sa estado ng bulkan.'],
+          answer: 0,
+          explanation: 'Ang geologically young na bulkan ay karaniwang may posibilidad pa ring maging aktibo.'
+        },
+        {
+          q: 'Alin sa mga sumusunod ang halimbawa ng inactive o extinct volcano?',
+          options: ['Balikabok', 'Mayon', 'Taal', 'Pinatubo'],
+          answer: 0,
+          explanation: 'Ang Balikabok ay halimbawa ng inactive o extinct volcano.'
+        },
+        {
+          q: 'Ang Disaster Risk Reduction ay higit na nakatuon sa:',
+          options: ['Pagbawas ng panganib at pagliit ng pinsala sa pamamagitan ng sistematikong pagsusuri at pamamahala ng mga sanhi ng sakuna.', 'Pagpapalawak ng population sa hazard-prone zones.', 'Pagbabawas ng bilang ng ahensiya ng gobyerno.', 'Pagpapabagal ng mga pagsasanay sa komunidad.'],
+          answer: 0,
+          explanation: 'Ang DRR ay nakatuon sa pagbabawas ng peligro at epekto ng sakuna sa pamamagitan ng sistematikong pagsusuri at pamamahala.'
+        },
+        {
+          q: 'Alin ang pinakaangkop na paglalarawan sa RA 10121?',
+          options: ['Ito ay batas na nagtakda ng Disaster Risk Reduction and Management framework sa Pilipinas.', 'Ito ay batas na nagbabawal sa lahat ng uri ng bagyo.', 'Ito ang batas na nagtatag ng PHIVOLCS.', 'Ito ay batas na nag-uutos sa lahat ng komunidad na magtayo ng dam.'],
+          answer: 0,
+          explanation: 'Ang RA 10121 ay ang Philippine Disaster Risk Reduction and Management Act of 2010.'
+        },
+        {
+          q: 'Alin ang pinakamahusay na pagpapaliwanag sa tungkulin ng NDRRMC?',
+          options: ['Namamahala ito sa sistema ng pagbabawas ng epekto ng sakuna at kalamidad sa bansa.', 'Nagsasagawa ito ng pagtuturo sa lahat ng paaralan.', 'Nangongolekta ito ng buwis sa lahat ng mamamayan.', 'Nagpapalaganap ito ng turista sa buong Pilipinas.'],
+          answer: 0,
+          explanation: 'Ang NDRRMC ang namamahala sa disaster risk reduction system sa Pilipinas.'
+        },
+        {
+          q: 'Sa CBDRRMP, bakit mahalaga ang participatory approach sa pagbuo ng plano?',
+          options: ['Dahil ang planong ginawa para sa komunidad ay dapat isaalang-alang ang lahat ng sektor at pangangailangan ng mga mamamayan.', 'Dahil ang plano ay dapat isagawa lamang ng lokal na pamahalaan.', 'Dahil ang plano ay dapat limitahan sa mga mayayamang mamamayan lamang.', 'Dahil ang komunidad ay dapat hindi nakikilahok sa pagpaplano.'],
+          answer: 0,
+          explanation: 'Ang participatory approach ay nagbibigay ng pagkakataon sa lahat na makilahok at maipatupad ang nararapat na solusyon.'
+        },
+        {
+          q: 'Alin ang pinakatumpak na kahulugan ng participatory disaster risk assessment?',
+          options: ['Ito ay proseso ng pagkilala at pagsusuri ng natural at anthropogenic hazards sa pamamagitan ng datos, pakikipag-usap, at hazard mapping.', 'Ito ay pag-ensemble ng mga isyu sa ekonomiya sa lokal na pamahalaan.', 'Ito ay pagsasagawa ng emergency response nang walang data.', 'Ito ay pag-aalis ng mga hazard sa isang rehiyon.'],
+          answer: 0,
+          explanation: 'Kasama rito ang pangangalap ng datos, pakikipag-usap, at hazard mapping para malaman ang panganib.'
+        },
+        {
+          q: 'Ano ang pinakamainam na layunin ng participatory disaster risk management planning?',
+          options: ['Paglikha ng planong angkop sa lokasyon, kapasidad, at kalagayan ng komunidad.', 'Pagpapagawa ng mga planong pare-pareho sa lahat ng lugar.', 'Pagpapalitan ng mga lokal na plano sa mga batas ng internasyonal.', 'Pagbibigay ng utos sa mga mamamayan na laging magbakasyon.'],
+          answer: 0,
+          explanation: 'Ang planong ito ay dapat na nakabatay sa aktwal na kalagayan at kapasidad ng komunidad.'
+        },
+        {
+          q: 'Sa CBDRRMP, ang capacity building ay pinapahusay sa pamamagitan ng:',
+          options: ['Pagsasanay at edukasyon upang mapaunlad ang kaalaman at kakayahang tumugon sa kalamidad.', 'Pagsasara ng mga eskwelahan sa panahon ng tag-ulan.', 'Pagbubukod ng mga may kapansanan sa pagpaplano.', 'Pagpapahintulot sa mga tao na maghintay na lamang sa tulong ng gobyerno.'],
+          answer: 0,
+          explanation: 'Ang capacity building ay nagbibigay ng kaalaman at kasanayan sa mga tao upang maging handa at epektibong tumugon.'
+        },
+        {
+          q: 'Ano ang nagpapakilala sa community-managed implementation bilang mahalagang bahagi ng CBDRRMP?',
+          options: ['Hindi sapat ang paggawa ng plano; dapat itong ipatupad, subaybayan, at suriin ng komunidad.', 'Dapat na isagawa lamang ng mga eksperto at hindi ng lokal na komunidad.', 'Kailangan na itago ang plano sa panahong walang sakuna.', 'Ang komunidad ay dapat maghintay ng pederal na utos bago kumilos.'],
+          answer: 0,
+          explanation: 'Ang planong nakasulat lamang ay hindi sapat; dapat itong isagawa at subaybayan ng komunidad.'
+        },
+        {
+          q: 'Bakit kinakailangan ang integration with local development sa disaster planning?',
+          options: ['Dahil ang disaster risk reduction ay dapat umayon sa pangmatagalang pag-unlad at climate resilience ng komunidad.', 'Dahil ang bawat kalamidad ay natatapos sa isang buwan lamang.', 'Dahil ang lokal na planong pangkaunlaran ay hindi dapat magkabit sa hazard management.', 'Dahil ang climate change ay hindi malalampasan sa komunidad.'],
+          answer: 0,
+          explanation: 'Ang disaster planning ay dapat nakaangkla sa lokal na pagpapaunlad upang maging sustainable at resilient ang komunidad.'
+        }
+      ];
+
+      function shuffleArray(array) {
+        const copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      const preparedQuestions = questions.map((item) => {
+        const originalOptions = item.options;
+        const originalAnswer = item.answer;
+        const order = shuffleArray([0, 1, 2, 3]);
+        const shuffledOptions = order.map((index) => originalOptions[index]);
+        const newAnswer = order.indexOf(originalAnswer);
+
+        return {
+          ...item,
+          options: shuffledOptions,
+          answer: newAnswer
+        };
+      });
+
+      const totalQuestions = preparedQuestions.length;
+      const passingScore = totalQuestions - 2;
+      const quizContainer = document.getElementById('quiz');
+      const resultBox = document.getElementById('result');
+      const reviewBox = document.getElementById('reviewBox');
+      const form = document.getElementById('quizForm');
+      const scoreBanner = document.getElementById('scoreBanner');
+
+      preparedQuestions.forEach((item, index) => {
+        const questionWrapper = document.createElement('div');
+        questionWrapper.className = 'question';
+
+        const questionTitle = document.createElement('h3');
+        questionTitle.textContent = `${index + 1}. ${item.q}`;
+        questionWrapper.appendChild(questionTitle);
+
+        const optionsWrapper = document.createElement('div');
+        optionsWrapper.className = 'options';
+
+        item.options.forEach((option, optIndex) => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `q${index}`;
+          input.value = optIndex;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(option));
+          optionsWrapper.appendChild(label);
+        });
+
+        questionWrapper.appendChild(optionsWrapper);
+        quizContainer.appendChild(questionWrapper);
+      });
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let score = 0;
+        const formData = new FormData(form);
+        const mistakes = [];
+
+        preparedQuestions.forEach((item, index) => {
+          const selected = formData.get(`q${index}`);
+          const selectedIndex = selected === null ? null : Number(selected);
+
+          if (selectedIndex !== null && selectedIndex === item.answer) {
+            score++;
+          } else {
+            mistakes.push({
+              index,
+              selectedIndex,
+              selectedText: selectedIndex === null ? 'No answer selected' : item.options[selectedIndex],
+              correctText: item.options[item.answer],
+              explanation: item.explanation
+            });
+          }
+        });
+
+        scoreBanner.textContent = `Score: ${score} / ${totalQuestions}`;
+
+        const passed = score >= passingScore;
+        resultBox.className = `result ${passed ? 'pass' : 'fail'}`;
+        resultBox.textContent = passed
+          ? `Passed! You scored ${score}/${totalQuestions}. The passing score is ${passingScore}.`
+          : `Failed. You scored ${score}/${totalQuestions}. The passing score is ${passingScore}. Try again.`;
+
+        reviewBox.style.display = 'block';
+
+        if (mistakes.length === 0) {
+          reviewBox.innerHTML = '<h3>Perfect score! You got all answers right.</h3>';
+          return;
+        }
+
+        reviewBox.innerHTML = `
+          <h3>Review your mistakes:</h3>
+          <ul>
+            ${mistakes.map(m => `
+              <li>
+                <strong>Question ${m.index + 1}:</strong> You chose "${m.selectedText}".<br>
+                <strong>Correct answer:</strong> "${m.correctText}"<br>
+                <em>Why it was wrong:</em> ${m.explanation}
+              </li>
+            `).join('')}
+          </ul>
+        `;
+      });
+    </script>
+  </body>
+</html>
